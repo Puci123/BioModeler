@@ -1,23 +1,16 @@
 ﻿#include "BioModeler.h"
-#include "DicomRead.h"
-#include "DebugUtilty.h"
-
+#include "DICOM/DcmFile.h"
 
 int main()
 {
 	std::string path("C:\\OPENGL\\BioModeler\\Data\\Test_img1");
 
-	DicomRead read(path);
-	if (!read.Open())
-	{
-		LOG_ERROR("Can't open data file: " << path);
-	}
-	else
-	{
-		LOG("File open succesfll, size: " << read.Size() << "b");
-		read.Read();
-	}
+	DICOM::DcmFile file(path);
 
+	/*if (reader.Open()) 
+	{
+		std::cout << "\t File been opeen sucesfully" << std::endl;
+	}*/
 
 
 	return 0;
