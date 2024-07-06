@@ -160,6 +160,13 @@ void DICOM::Reader::ReadField(Field& field)
 		ASSERT(false);
 	}
 
+	//Romve /0 bytes at end buffer ??
+	while (field.buffer.back() == 0)
+	{
+		field.buffer.pop_back();
+		field.size--;
+	}
+
 	LOG("Sucesfyl read filed with tag: " << std::hex << field.tag.group << " "  << field.tag.element);
 	return;
 	

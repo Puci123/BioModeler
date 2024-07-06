@@ -1,6 +1,18 @@
 #include "DcmFile.h"
 
 
+bool TestStrings(const std::string& a, const std::string& b)
+{
+	if (a.size() != b.size())
+	{
+		LOG_WARINIG("Diffrent lenghts");
+		return false;
+	}
+
+	return true;
+}
+
+
 DICOM::DcmFile::DcmFile(const std::string& path)
 	: m_Reader(path)
 {
@@ -23,6 +35,13 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 
 	std::string mediaClass     = FieldToString(m_MediaClass);
 	std::string mediaClassStr  = "Unrecogniezed";
+	std::string temp = "1.2.840.10008.5.1.4.1.1.1.1";
+
+
+	//NOTE: DEBUG
+	TestStrings(mediaClass, "1.2.840.10008.5.1.4.1.1.1.1");
+	//
+
 
 	if (!MediaUID2String(mediaClass, mediaClassStr))
 	{
@@ -44,7 +63,7 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 
 	LOG("\n##################### SUCESFULLY OPEN #####################\n"  
 		"\tMedia class: " << FieldToString(m_MediaClass) << " (" << mediaClassStr << ")" << "\n"
-		"\tTrasfer syntax: " << FieldToString(m_TrasferSyntax) << " (" << mediaClassStr << ")" << std::endl);
+		"\tTrasfer syntax: " << FieldToString(m_TrasferSyntax) << " (" << trasferSyntaxStr << ")" << std::endl);
 
 
 
@@ -64,5 +83,6 @@ DICOM::DcmFile::~DcmFile() {}
 
 std::string DICOM::DcmFile::FieldToString(const Field& field)
 {
+
 	return std::string(field.buffer.begin(), field.buffer.end());
 }
