@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Reader.h"
+#include "DcmTags.h"
 
 namespace DICOM
 {
@@ -18,6 +19,11 @@ namespace DICOM
 
 			bool      m_IsValidFile  = false;
 			uint64_t  m_HeaderLenght = 0;
+
+			Field m_MediaClass;
+			Field m_TrasferSyntax;
+
+			std::string FieldToString(const Field& field);
 	};
 }
 

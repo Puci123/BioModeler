@@ -19,7 +19,7 @@ namespace DICOM
 	{
 		Tag tag{ 0,0 };
 		char VR[2] = { 'X','X' };
-		uint32_t size = 0;
+		uint16_t size = 0;
 		std::vector<uint8_t> buffer;
 
 	};
@@ -46,6 +46,7 @@ namespace DICOM
 
 			void ReadTag(Tag& tag);
 			void ReadField(Field& field);
+			void ReadToTag(const Tag& tag);
 
 	
 		private:

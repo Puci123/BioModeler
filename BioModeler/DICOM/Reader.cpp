@@ -1,5 +1,19 @@
 #include "Reader.h"
 
+
+
+//================================= HELPERS  ================================= //
+
+
+static bool compareVr(char vr[2], const std::string& vrb)
+{
+	return (vrb.size() == 2 && std::strncmp(vr, vrb.c_str(), 2) == 0);
+}
+
+
+
+//================================= Reader class  ================================= //
+
 DICOM::Reader::Reader(const std::string& path)
 	: m_Path(path)
 {}
@@ -20,6 +34,8 @@ bool DICOM::Reader::Open()
 		LOG_ERROR("FALIED TO OPEN: " << m_Path);
 		return false;
 	}
+
+	return true;
 }
 
 bool DICOM::Reader::Good()
@@ -88,22 +104,83 @@ void DICOM::Reader::ReadTag(Tag& tag)
 
 void DICOM::Reader::ReadField(Field& field)
 {
+	
 	ReadTag(field.tag);
 	ReadByteBlock(field.VR, 2);
-	
-	if (std::string(field.VR) == "UL")
+
+	if (compareVr(field.VR, "UL"))
 	{
+		ReadUint16(&field.size);
+		field.buffer.resize(field.size);
+		ReadByteBlock(&field.buffer[0], field.size);
+	}
+	else if(compareVr(field.VR, "OB"))
+	{
+		
+		Movec(2);					//Skip two bytes used for alligiemnt ??
+		
+		uint32_t size = 0;
+		ReadUint32(&size);
 
-		uint16_t lenghtOfField;
-		uint32_t lenght;
+		field.size = static_cast<uint16_t>(size);	//WARINIG: for test puropse only!
+		field.buffer.resize(field.size);
+		ReadByteBlock(&field.buffer[0], field.size);
+	}
+	else if(compareVr(field.VR,"UI"))
+	{
+		//SAME AS UL
+		ReadUint16(&field.size);
+		field.buffer.resize(field.size);
+		ReadByteBlock(&field.buffer[0], field.size);
+	}
+	else if (compareVr(field.VR, "SH"))
+	{
+		//SAME AS UL
+		ReadUint16(&field.size);
+		field.buffer.resize(field.size);
+		ReadByteBlock(&field.buffer[0], field.size);
+	}
+	//else if(compareVr(field.VR, "AE"))
+	//{
+	//	//SAME AS UL
+	//	ReadUint16(&field.size);
+	//	field.buffer.resize(field.size);
+	//	ReadByteBlock(&field.buffer[0], field.size);
+	//}
+	else
+	{
+		LOG_ERROR("UNRECOGNIZED FILED TYPE!! in filed with tag: " << std::hex << field.tag.group << " " << field.tag.element);
+		LOG("BIT in file: " << m_BinStream.tellg());
 
-		ReadUint16(&lenghtOfField);
-		ReadUint32(&lenght);
-
-		ReadTag(field.tag);
+		//BUFFOR SNAPSHOT 
+		Movec(-6);
+		int8_t bufforSnapShot[256];
+		ReadByteBlock(bufforSnapShot, 256);
+		//
+		ASSERT(false);
 	}
 
-
+	LOG("Sucesfyl read filed with tag: " << std::hex << field.tag.group << " "  << field.tag.element);
 	return;
 	
+	
+}
+
+void DICOM::Reader::ReadToTag(const Tag& tag)
+{
+	Tag temp{ 0,0 };
+
+	while (temp.element != tag.element || temp.group != tag.group)
+	{
+		ReadTag(temp);
+		Movec(-2);		//Allingin window
+	}
+
+	Movec(-2); //Move to begiining of tag
+
+	LOG("Tag founed: " << std::hex << temp.group << " " << temp.element << " TAG pos:" << std::dec << m_BinStream.tellg());
+
+	//NOTE: DEBUG ONLY
+	//int8_t bufforSnapShot[256];
+	//ReadByteBlock(bufforSnapShot, 256);
 }
