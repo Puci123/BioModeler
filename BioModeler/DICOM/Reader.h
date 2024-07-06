@@ -37,16 +37,16 @@ namespace DICOM
 			void Setc(int64_t offset);
 			void Movec(int64_t offset);
 
-			uint64_t ReadByteBlock(void* blcok, uint64_t n);
+			size_t ReadByteBlock(void* blcok, uint64_t n);
 			
-			void ReadUint8 (uint8_t* value);
-			void ReadUint16(uint16_t* value);
-			void ReadUint32(uint32_t* value);
-			void ReadUint64(uint64_t* value);
+			bool ReadUint8 (uint8_t* value);
+			bool ReadUint16(uint16_t* value);
+			bool ReadUint32(uint32_t* value);
+			bool ReadUint64(uint64_t* value);
 
-			void ReadTag(Tag& tag);
+			bool ReadTag(Tag& tag);
 			void ReadField(Field& field);
-			void ReadToTag(const Tag& tag);
+			bool MoveToTag(const Tag& tag);
 
 	
 		private:

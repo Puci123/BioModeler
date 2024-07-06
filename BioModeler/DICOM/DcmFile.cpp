@@ -16,6 +16,8 @@ bool TestStrings(const std::string& a, const std::string& b)
 DICOM::DcmFile::DcmFile(const std::string& path)
 	: m_Reader(path)
 {
+	LOG("Opening dicom file....");
+
 	m_Reader.Open();
 	if (!m_Reader.Good()) return;
 	
@@ -30,7 +32,7 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 	}
 	
 
-	m_Reader.ReadToTag(TAGS::MEDIA_CLASS);
+	m_Reader.MoveToTag(TAGS::MEDIA_CLASS);
 	m_Reader.ReadField(m_MediaClass);
 
 	std::string mediaClass     = FieldToString(m_MediaClass);
@@ -46,10 +48,11 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 	if (!MediaUID2String(mediaClass, mediaClassStr))
 	{
 		LOG_ERROR("Unrecogniezed media uid: " << mediaClass);
+		return;
 	}
 
 
-	m_Reader.ReadToTag(TAGS::TRASFER_SYNTAX);
+	m_Reader.MoveToTag(TAGS::TRASFER_SYNTAX);
 	m_Reader.ReadField(m_TrasferSyntax);
 
 	std::string trasferSyntax    = FieldToString(m_TrasferSyntax);
@@ -58,6 +61,7 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 	if (!TrasferUID2String(trasferSyntax, trasferSyntaxStr))
 	{
 		LOG_ERROR("Unrecogniezed media uid: " << trasferSyntax);
+		return;
 	}
 
 
@@ -68,17 +72,21 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 
 
 	m_IsValidFile = true;
-
-
-	m_Reader.ReadToTag(TAGS::ROWS);
-	m_Reader.ReadToTag(TAGS::COLUMNS);
-	m_Reader.ReadToTag(TAGS::PIXEL_DATA);
-
 	return;
 
 }
 
 DICOM::DcmFile::~DcmFile() {}
+
+bool DICOM::DcmFile::LoadMedia()
+{
+	LOG("Loding media file ....");
+	if (!Good()) 
+	{
+		LOG_WARINIG("Can't meda data, file is in not in good state");
+		return false;
+	}
+}
 
 
 std::string DICOM::DcmFile::FieldToString(const Field& field)

@@ -13,6 +13,8 @@ namespace DICOM
 			~DcmFile();
 
 			inline bool Good() const { return m_IsValidFile; }
+			bool LoadMedia();
+
 
 		private:
 			Reader m_Reader;

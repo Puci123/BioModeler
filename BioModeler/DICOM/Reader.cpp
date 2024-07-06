@@ -50,7 +50,7 @@ void DICOM::Reader::Close()
 
 void DICOM::Reader::Setc(int64_t offset)
 {
-	ASSERT(Good());
+	ASSERT(m_BinStream.is_open());
 	m_BinStream.seekg(offset, std::ios::beg);
 }
 
@@ -59,43 +59,44 @@ void DICOM::Reader::Movec(int64_t offset)
 	m_BinStream.seekg(m_BinStream.tellg() + offset, std::ios::beg);
 }
 
-uint64_t DICOM::Reader::ReadByteBlock(void* blcok, uint64_t n)
+size_t DICOM::Reader::ReadByteBlock(void* blcok, uint64_t n)
 {
 	ASSERT(Good());
 	m_BinStream.read(reinterpret_cast<char*>(blcok), n);
 	return m_BinStream.gcount();
 }
 
-void DICOM::Reader::ReadUint8(uint8_t* value)
+bool DICOM::Reader::ReadUint8(uint8_t* value)
 {
-	ReadByteBlock(value, 1);
+	return ReadByteBlock(value, 1) == 1;
+	
 }
 
-void DICOM::Reader::ReadUint16(uint16_t* value)
+bool DICOM::Reader::ReadUint16(uint16_t* value)
 {
-	ReadByteBlock(value, 2);
-
-}
-
-void DICOM::Reader::ReadUint32(uint32_t* value)
-{
-	ReadByteBlock(value, 4);
+	return ReadByteBlock(value, 2) == 2;
 
 }
 
-void DICOM::Reader::ReadUint64(uint64_t* value)
+bool DICOM::Reader::ReadUint32(uint32_t* value)
 {
-	ReadByteBlock(value, 8);
+	return ReadByteBlock(value, 4) == 4;
 
 }
 
-void DICOM::Reader::ReadTag(Tag& tag)
+bool DICOM::Reader::ReadUint64(uint64_t* value)
+{
+	return ReadByteBlock(value, 8) == 8;
+
+}
+
+bool DICOM::Reader::ReadTag(Tag& tag)
 {
 	uint16_t group = 0;
 	uint16_t element = 0;
 
-	ReadUint16(&group);
-	ReadUint16(&element);
+	if(!ReadUint16(&group)) return false;
+	if(!ReadUint16(&element)) return false;
 
 
 	tag.element = element;
@@ -173,21 +174,40 @@ void DICOM::Reader::ReadField(Field& field)
 	
 }
 
-void DICOM::Reader::ReadToTag(const Tag& tag)
+bool DICOM::Reader::MoveToTag(const Tag& tag)
 {
 	Tag temp{ 0,0 };
+	bool found = false;
+	size_t cursorsPos = m_BinStream.tellg();
 
-	while (temp.element != tag.element || temp.group != tag.group)
+	while (Good())
 	{
-		ReadTag(temp);
+		if (!ReadTag(temp))
+		{
+			break;
+		}
 		Movec(-2);		//Allingin window
+
+		if ((temp.element == tag.element && temp.group == tag.group))
+		{
+			found = true;
+			break;
+		}
 	}
 
 	Movec(-2); //Move to begiining of tag
 
-	LOG("Tag founed: " << std::hex << temp.group << " " << temp.element << " TAG pos:" << std::dec << m_BinStream.tellg());
+	if (found)
+	{
+		LOG("Tag founed: " << std::hex << temp.group << " " << temp.element << " TAG pos:" << std::dec << m_BinStream.tellg());
+		return true;
+	}
+	
+	LOG_WARINIG("Tag is missing: " << std::hex << tag.group << " " << tag.element);
 
-	//NOTE: DEBUG ONLY
-	//int8_t bufforSnapShot[256];
-	//ReadByteBlock(bufforSnapShot, 256);
+	//Clear bits and restors cursor pos
+	m_BinStream.clear();
+	Setc(cursorsPos);
+	m_BinStream.tellg();
+	return false;
 }

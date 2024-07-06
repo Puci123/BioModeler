@@ -6,11 +6,7 @@ int main()
 	std::string path("C:\\OPENGL\\BioModeler\\Data\\Test_img1");
 
 	DICOM::DcmFile file(path);
-
-	/*if (reader.Open()) 
-	{
-		std::cout << "\t File been opeen sucesfully" << std::endl;
-	}*/
+	file.LoadMedia();
 
 
 	return 0;
