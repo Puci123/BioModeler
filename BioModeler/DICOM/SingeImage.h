@@ -12,6 +12,8 @@ class SingelImage
 
 		void SetPixel(uint32_t x, uint32_t y, uint16_t value);
 		void SaveToFile(const std::string& path);
+		void SkipBand(uint32_t n, uint32_t start = 0);
+
 
 		~SingelImage();
 

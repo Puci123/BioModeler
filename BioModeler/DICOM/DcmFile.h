@@ -1,8 +1,12 @@
 #pragma once
 
+#include <windows.h>
+#include <iostream>
+
 #include "Reader.h"
 #include "DcmTags.h"
 #include "SingeImage.h"
+
 
 namespace DICOM
 {
@@ -12,6 +16,9 @@ namespace DICOM
 		public:
 			DcmFile(const std::string& path);
 			~DcmFile();
+
+			void SaveToFile(const std::string& path);
+			void OpenImage(const std::string& path);
 
 			inline bool Good() const { return m_IsValidFile; }
 			bool LoadMedia();

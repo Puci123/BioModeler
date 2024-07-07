@@ -91,6 +91,17 @@ DICOM::DcmFile::DcmFile(const std::string& path)
 
 DICOM::DcmFile::~DcmFile() {}
 
+void DICOM::DcmFile::SaveToFile(const std::string& path)
+{
+	m_Media.SaveToFile(path);
+}
+
+void DICOM::DcmFile::OpenImage(const std::string& path)
+{
+	std::wstring widePath(path.begin(),path.end());
+	HINSTANCE result = ShellExecuteW(NULL, L"open", widePath.c_str(), NULL, NULL, SW_SHOW);
+}
+
 
 bool DICOM::DcmFile::LoadMedia()
 {
@@ -206,8 +217,6 @@ bool DICOM::DcmFile::LoadXRay()
 	}
 
 	LOG("Scucesfully loded media file");
-	
-	//m_Media.SaveToFile("testOutput1.bmp");
 	return true;
 }
 

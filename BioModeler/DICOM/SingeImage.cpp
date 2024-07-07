@@ -22,7 +22,12 @@ void SingelImage::SetPixel(uint32_t x, uint32_t y, uint16_t value)
 	if (value > m_BiggestValue) m_BiggestValue = value;
 	if (value < m_SmalestValue) m_SmalestValue = value;
 	
-	m_PixelData[y * m_Width + x] = value;
+	//TODO: Remove and maki it function
+
+	if (x < 7)
+		m_PixelData[y * m_Width + x] = 5;
+	else
+		m_PixelData[y * m_Width + x] = value;
 	
 }
 
@@ -36,9 +41,11 @@ void SingelImage::SaveToFile(const std::string& path)
 	{
 		for (size_t x = 0; x < m_Width; x++)
 		{
-			//uint8_t value = std::floor((( ) / static_cast<float>(m_BiggestValue - m_SmalestValue)) * 256.f);
-			uint8_t value = std::min(255, static_cast<int32_t>(m_PixelData[y * m_Width + x]));
-			tempBuffer[y * m_Width + x] = value;
+			double temp = ((m_PixelData[y * m_Width + x]) / static_cast<float>(m_BiggestValue - m_SmalestValue));
+			temp = std::sqrt(temp); //NOTE: aply alpha correction for presnttation purpose only !!!
+
+			//uint8_t value = std::min(255, static_cast<int32_t>(m_PixelData[y * m_Width + x]));
+			tempBuffer[y * m_Width + x] = std::floor(temp * 255.f);
 		}
 	}
 
