@@ -2,6 +2,7 @@
 
 #include "Reader.h"
 #include "DcmTags.h"
+#include "SingeImage.h"
 
 namespace DICOM
 {
@@ -24,8 +25,15 @@ namespace DICOM
 
 			Field m_MediaClass;
 			Field m_TrasferSyntax;
+			TRASFER::BitOrders m_BitOrder = TRASFER::BitOrders::unspecifed;
+
+
+			SingelImage m_Media;
+
+			bool LoadXRay();
 
 			std::string FieldToString(const Field& field);
+
 	};
 }
 

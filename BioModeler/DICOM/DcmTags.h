@@ -30,6 +30,27 @@ namespace DICOM
 		inline constexpr Tag PIXEL_DATA			{ 0x7FE0,0x0010 };
 	}
 
+	namespace MEDIA
+	{
+		inline constexpr std::string_view X_RAY_IMAGE		= "1.2.840.10008.5.1.4.1.1.1.1";
+	}
+
+	namespace TRASFER
+	{
+		inline constexpr std::string_view IMPLICT			= "1.2.840.10008.1.2";
+
+
+
+		enum class BitOrders
+		{
+			unspecifed		= 0,
+			litleEndian		= 0,
+			bigEndian		= 0
+		};
+	}
+
+	
+
 
 	inline std::unordered_map<std::string, std::string> MediaClasses
 	{

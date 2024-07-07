@@ -45,7 +45,9 @@ namespace DICOM
 			bool ReadUint64(uint64_t* value);
 
 			bool ReadTag(Tag& tag);
+			bool ReadVR(char target[2]);
 			void ReadField(Field& field);
+
 			bool MoveToTag(const Tag& tag);
 
 	

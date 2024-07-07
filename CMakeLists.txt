@@ -13,3 +13,4 @@ project ("BioModeler")
 
 # Uwzględnij podprojekty.
 add_subdirectory ("BioModeler")
+add_subdirectory ("stbi")

@@ -101,13 +101,31 @@ bool DICOM::Reader::ReadTag(Tag& tag)
 
 	tag.element = element;
 	tag.group   = group;
+
+	return true;
+}
+
+bool DICOM::Reader::ReadVR(char target[2])
+{
+	uint8_t first;
+	uint8_t second;
+
+
+	if (!ReadUint8(&first))  return false;
+	if (!ReadUint8(&second)) return false;
+
+
+	target[0] = first;
+	target[1] = second;
 }
 
 void DICOM::Reader::ReadField(Field& field)
 {
 	
 	ReadTag(field.tag);
-	ReadByteBlock(field.VR, 2);
+
+	if (field.tag.group == 2) ReadVR(field.VR); //TODO: ASSUME IMPLICT VT
+	
 
 	if (compareVr(field.VR, "UL"))
 	{
@@ -141,24 +159,25 @@ void DICOM::Reader::ReadField(Field& field)
 		field.buffer.resize(field.size);
 		ReadByteBlock(&field.buffer[0], field.size);
 	}
-	//else if(compareVr(field.VR, "AE"))
-	//{
-	//	//SAME AS UL
-	//	ReadUint16(&field.size);
-	//	field.buffer.resize(field.size);
-	//	ReadByteBlock(&field.buffer[0], field.size);
-	//}
+	else if(compareVr(field.VR, "\0\0"))
+	{
+		//S
+		ReadUint16(&field.size);
+		field.buffer.resize(field.size);
+		ReadByteBlock(&field.buffer[0], field.size);
+	}
 	else
 	{
-		LOG_ERROR("UNRECOGNIZED FILED TYPE!! in filed with tag: " << std::hex << field.tag.group << " " << field.tag.element);
-		LOG("BIT in file: " << m_BinStream.tellg());
+		LOG_WARINIG("SKIPPING UNSPECIFED VR: " << field.VR[0] << field.VR[1]);
+		
+		uint32_t lenght = 0;
+		ReadUint32(&lenght);
 
-		//BUFFOR SNAPSHOT 
-		Movec(-6);
-		int8_t bufforSnapShot[256];
-		ReadByteBlock(bufforSnapShot, 256);
-		//
-		ASSERT(false);
+		field.buffer.resize(lenght);
+		field.size = static_cast<uint16_t>(lenght);
+		ReadByteBlock(&field.buffer[0], lenght);
+		LOG("Sucesfyl read filed with tag: " << std::hex << field.tag.group << " " << field.tag.element);
+		return;
 	}
 
 	//Romve /0 bytes at end buffer ??
@@ -200,8 +219,17 @@ bool DICOM::Reader::MoveToTag(const Tag& tag)
 	if (found)
 	{
 		LOG("Tag founed: " << std::hex << temp.group << " " << temp.element << " TAG pos:" << std::dec << m_BinStream.tellg());
+		
+		
+		uint8_t bufferSnap[256];
+		ReadByteBlock(bufferSnap, 256);
+		Movec(-256);
+		
+
 		return true;
 	}
+
+	
 	
 	LOG_WARINIG("Tag is missing: " << std::hex << tag.group << " " << tag.element);
 
