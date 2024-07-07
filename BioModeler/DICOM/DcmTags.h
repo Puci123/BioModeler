@@ -26,6 +26,8 @@ namespace DICOM
 		inline constexpr Tag BITS_STORED		{ 0x0028,0x0101 };
 		inline constexpr Tag HIGH_BIT		    { 0x0028,0x0102 };
 		inline constexpr Tag PIXEL_REPS			{ 0x0028,0x0103 };
+		inline constexpr Tag SMALLEST_VALUE		{ 0x0028,0x0106 };
+		inline constexpr Tag BIGGEST_VALUE		{ 0x0028,0x0107 };
 
 		inline constexpr Tag PIXEL_DATA			{ 0x7FE0,0x0010 };
 	}

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "StbiWrite.h"
+
 class SingelImage
 {
 	public:
@@ -19,6 +21,9 @@ class SingelImage
 		uint32_t m_Height;
 		uint32_t m_BppAllocted;
 		uint32_t m_BppUsed;
+
+		uint32_t m_BiggestValue = 0;
+		uint32_t m_SmalestValue = 100000000;
 
 		std::vector<uint16_t> m_PixelData;
 

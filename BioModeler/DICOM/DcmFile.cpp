@@ -121,7 +121,8 @@ bool DICOM::DcmFile::LoadXRay()
 	Field bppUsed;
 	Field highBit;
 	Field reprezenatation;
-
+	Field biggestValue;
+	Field smallestValu;
 
 	if (!m_Reader.MoveToTag(TAGS::ROWS))
 	{
@@ -206,7 +207,7 @@ bool DICOM::DcmFile::LoadXRay()
 
 	LOG("Scucesfully loded media file");
 	
-	m_Media.SaveToFile("test.png");
+	//m_Media.SaveToFile("testOutput1.bmp");
 	return true;
 }
 
