@@ -114,17 +114,30 @@ bool DICOM::Reader::ReadVR(char target[2])
 	if (!ReadUint8(&first))  return false;
 	if (!ReadUint8(&second)) return false;
 
+	if (first == 0)
+	{
+
+		Movec(-2);
+		return true;
+	}
+
+	if (second == 0)
+	{
+		Movec(-2);
+		return true;
+	}
 
 	target[0] = first;
 	target[1] = second;
+
+	return true;
 }
 
 void DICOM::Reader::ReadField(Field& field)
 {
 	
 	ReadTag(field.tag);
-
-	if (field.tag.group == 2) ReadVR(field.VR); //TODO: ASSUME IMPLICT VT
+	ReadVR(field.VR); //TODO: ASSUME IMPLICT VT
 	
 
 	if (compareVr(field.VR, "UL"))
@@ -159,9 +172,15 @@ void DICOM::Reader::ReadField(Field& field)
 		field.buffer.resize(field.size);
 		ReadByteBlock(&field.buffer[0], field.size);
 	}
-	else if(compareVr(field.VR, "\0\0"))
+	//else if(compareVr(field.VR, "\0\0"))
+	//{
+	//	//S
+	//	ReadUint16(&field.size);
+	//	field.buffer.resize(field.size);
+	//	ReadByteBlock(&field.buffer[0], field.size);
+	//}
+	else if(compareVr(field.VR,"US"))
 	{
-		//S
 		ReadUint16(&field.size);
 		field.buffer.resize(field.size);
 		ReadByteBlock(&field.buffer[0], field.size);

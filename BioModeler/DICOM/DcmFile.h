@@ -5,6 +5,7 @@
 
 #include "Reader.h"
 #include "DcmTags.h"
+#include "Stbi.h"
 #include "SingeImage.h"
 
 
@@ -38,6 +39,7 @@ namespace DICOM
 			SingelImage m_Media;
 
 			bool LoadXRay();
+			bool LoadCT();
 
 			std::string FieldToString(const Field& field);
 

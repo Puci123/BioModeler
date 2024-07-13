@@ -449,7 +449,7 @@ extern "C" {
     STBIDEF stbi_us* stbi_load_16(char const* filename, int* x, int* y, int* channels_in_file, int desired_channels);
     STBIDEF stbi_us* stbi_load_from_file_16(FILE* f, int* x, int* y, int* channels_in_file, int desired_channels);
 #endif
-
+   
     ////////////////////////////////////
     //
     // float-per-channel interface

@@ -5,7 +5,9 @@
 
 int main()
 {
-	std::string path("C:\\OPENGL\\BioModeler\\Data\\Test_img1");
+	std::string path("C:\\OPENGL\\BioModeler\\Data\\TEST_img_CT_2");
+	//std::string path("C:\\OPENGL\\BioModeler\\Data\\TEST_img_XR_0");
+
 	std::string savePath("TestIMG2.bmp");
 
 	DICOM::DcmFile file(path);
@@ -16,8 +18,8 @@ int main()
 	else
 	{
 		std::cout << "Media OK!" << std::endl;
-		file.SaveToFile(savePath);
-		file.OpenImage(savePath);
+		//file.SaveToFile(savePath);
+		//file.OpenImage(savePath);
 	
 	}
 

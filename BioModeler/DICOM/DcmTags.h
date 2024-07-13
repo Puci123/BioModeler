@@ -2,6 +2,7 @@
 
 #include "Reader.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <string>
 
 namespace DICOM 
@@ -35,12 +36,13 @@ namespace DICOM
 	namespace MEDIA
 	{
 		inline constexpr std::string_view X_RAY_IMAGE		= "1.2.840.10008.5.1.4.1.1.1.1";
+		inline constexpr std::string_view CT_IMAGE			= "1.2.840.10008.5.1.4.1.1.2";
 	}
 
 	namespace TRASFER
 	{
 		inline constexpr std::string_view IMPLICT			= "1.2.840.10008.1.2";
-
+		inline constexpr std::string_view JEPG0				= "1.2.840.10008.1.2.4.70";
 
 
 		enum class BitOrders
@@ -51,19 +53,23 @@ namespace DICOM
 		};
 	}
 
-	
+	inline std::unordered_set<std::string> VRS
+	{
 
+	};
 
 	inline std::unordered_map<std::string, std::string> MediaClasses
 	{
 		{"test","test" },
-		{"1.2.840.10008.5.1.4.1.1.1.1", "Digital X-Ray Image IOD"}
+		{std::string(MEDIA::X_RAY_IMAGE), "Digital X-Ray Image IOD"},
+		{std::string(MEDIA::CT_IMAGE),	  "CT Image Storage" }
 	};
 
 	inline std::unordered_map<std::string, std::string> TrasferClasses
 	{
 		{"test","test"},
-		{"1.2.840.10008.1.2", "Implicit VR Endian: Default Transfer Syntax for DICOM"}
+		{std::string(TRASFER::IMPLICT),	"Implicit VR Endian: Default Transfer Syntax for DICOM"},
+		{std::string(TRASFER::JEPG0),	"JPEG Lossless, Non-Hierarchical, First-Order Prediction(Process 14 [Selection Value 1])" }
 	};
 
 	//============================== Functions to convert UID to string description ==============================//
